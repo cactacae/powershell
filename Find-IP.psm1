@@ -1,7 +1,10 @@
+# accepts one or more host names on the pipeline and resolves them to one or more IP aaddresses
+# If the host name cannot be resolved "Unknown IP" is returned
+
 function Find-IP {
 	[CmdletBinding()]
 	param (
-		[alias("ComputerName")]
+		[alias("ComputerName","HostName")]
 		[parameter(Position=0,
 			Mandatory=$true,
 			ValueFromPipeline=$true,
