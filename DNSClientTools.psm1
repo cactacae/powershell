@@ -34,6 +34,10 @@ function Find-IP {
 	}
 }
 
+# accepts one or more IP addresses on the pipeline and resolves them to one or more host names
+# If the IP address cannot be resolved "Unresolved" is returned
+# 
+
 function Find-HostName {
 	[CmdletBinding()]
 	param (
