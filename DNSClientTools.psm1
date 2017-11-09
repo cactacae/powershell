@@ -34,4 +34,35 @@ function Find-IP {
 	}
 }
 
-#lookup-ip $input
+function Find-HostName {
+	[CmdletBinding()]
+	param (
+		[alias("ComputerName","HostName")]
+		[parameter(Position=0,
+			Mandatory=$true,
+			ValueFromPipeline=$true,
+			ValueFromPipelineByPropertyName=$true)]
+			[string[]]$IPAddress
+	)
+
+	Begin {
+		$results = @()
+	}
+
+	Process {
+		try {
+			$IP = $IPAddress[0]
+			$ComputerName = [System.Net.Dns]::GetHostEntry($IP)
+			#$ip = $ip.IPAddressToString
+			$results += [pscustomobject]@{ComputerName=$ComputerName.HostName; IPAddress=$IP}
+
+		} catch {
+			$results += [pscustomobject]@{ComputerName="Unresolved"; IPAddress=$IP}
+		}
+	}
+
+	End {
+		write-output $results
+	}
+}
+
