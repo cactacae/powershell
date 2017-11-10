@@ -70,3 +70,5 @@ function Find-HostName {
 	}
 }
 
+Export-ModuleMember -Function Find-IP
+Export-ModuleMember -Function Find-HostName
