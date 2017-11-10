@@ -20,9 +20,9 @@ function Find-IP {
 	Process {
 		try {
 			$ComputerName = $DNSHostName[0]
-			$ip = [System.Net.Dns]::GetHostAddresses($ComputerName)
+			$ip = [System.Net.Dns]::GetHostEntry($ComputerName)
 			#$ip = $ip.IPAddressToString
-			$results += [pscustomobject]@{ComputerName=$ComputerName; IPAddress=$ip.IPAddressToString}
+			$results += [pscustomobject]@{ComputerName=$ip.HostName; IPAddress=$ip.AddressList}
 
 		} catch {
 			$results += [pscustomobject]@{ComputerName=$ComputerName; IPAddress="Unknown IP"}

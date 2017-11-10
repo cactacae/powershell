@@ -1,11 +1,12 @@
 function Get-RDSession {
     [CmdletBinding()]
 param (
+    [alias("ComputerName","HostName")]
 	[parameter(Position=0,
         Mandatory=$false,
         ValueFromPipelineByPropertyName=$true,
         ParameterSetName="ComputerName")]
-        [string[]]$ComputerName,
+        [string[]]$DNSHostName,
 
 	[parameter(Position=0,
         Mandatory=$false,
@@ -23,21 +24,21 @@ Process {
     Switch ($PSCmdlet.ParameterSetName)
         {
             "ComputerName" {
-                if ($computerName -eq $null) {
+                if ($DNSHostName -eq $null) {
                     $queryResults = (quser 2>$null)
                 } else {
                     # Run quser and parse the output 
-                    $queryResults = (quser /server:$ComputerName 2>$null)
+                    $queryResults = (quser /server:$DNSHostName 2>$null)
                 }
             }
             "PSSession" {
                 $queryresults = (Invoke-command -Session $PSSession -ScriptBlock {quser 2>$null})
-                $ComputerName = $PSSession.ComputerName
+                $DNSHostName = $PSSession.ComputerName
             }
         }
 
         if ($queryresults) {
-            $sessionList += (ConvertTo-RDSession $queryResults $ComputerName)
+            $sessionList += (ConvertTo-RDSession $queryResults $DNSHostName)
         }
 }
 
