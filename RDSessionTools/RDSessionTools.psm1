@@ -1,50 +1,50 @@
 function Get-RDSession {
     [CmdletBinding()]
-param (
-    [alias("ComputerName","HostName")]
-	[parameter(Position=0,
-        Mandatory=$false,
-        ValueFromPipelineByPropertyName=$true,
-        ParameterSetName="ComputerName")]
-        [string[]]$DNSHostName,
+    param (
+        [alias("ComputerName","HostName")]
+        [parameter(Position=0,
+            Mandatory=$false,
+            ValueFromPipelineByPropertyName=$true,
+            ParameterSetName="ComputerName")]
+            [string[]]$DNSHostName,
 
-	[parameter(Position=0,
-        Mandatory=$false,
-        ValueFromPipeline=$true,
-        ParameterSetName="PSSession")]
-        [System.Management.Automation.Runspaces.PSSession[]]$PSSession
-)
+        [parameter(Position=0,
+            Mandatory=$false,
+            ValueFromPipeline=$true,
+            ParameterSetName="PSSession")]
+            [System.Management.Automation.Runspaces.PSSession[]]$PSSession
+    )
 
-Begin {
-    $SessionList = @()
+    Begin {
+#        $SessionList = @()
+    }
 
-}
-
-Process {
-    Switch ($PSCmdlet.ParameterSetName)
-        {
-            "ComputerName" {
-                if ($DNSHostName -eq $null) {
-                    $queryResults = (quser 2>$null)
-                } else {
-                    # Run quser and parse the output 
-                    $queryResults = (quser /server:$DNSHostName 2>$null)
+    Process {
+        Switch ($PSCmdlet.ParameterSetName)
+            {
+                "ComputerName" {
+                    if ($DNSHostName -eq $null) {
+                        $queryResults = (quser 2>$null)
+                    } else {
+                        # Run quser and parse the output 
+                        $queryResults = (quser /server:$DNSHostName 2>$null)
+                    }
+                }
+                "PSSession" {
+                    $queryresults = (Invoke-command -Session $PSSession -ScriptBlock {quser 2>$null})
+                    $DNSHostName = $PSSession.ComputerName
                 }
             }
-            "PSSession" {
-                $queryresults = (Invoke-command -Session $PSSession -ScriptBlock {quser 2>$null})
-                $DNSHostName = $PSSession.ComputerName
+
+            if ($queryresults) {
+                #$sessionList += (ConvertTo-RDSession $queryResults $DNSHostName)
+                ConvertTo-RDSession $queryResults $DNSHostName
             }
-        }
+    }
 
-        if ($queryresults) {
-            $sessionList += (ConvertTo-RDSession $queryResults $DNSHostName)
-        }
-}
-
-End {
-    write-output $SessionList
-}  
+    End {
+        #write-output $SessionList
+    }  
 }
 
 class RDSession {
@@ -90,7 +90,7 @@ function ConvertTo-RDSession {
         [string]$computername
     )
 
-	$SessionList = @()
+#	$SessionList = @()
 
     #Check for no RD Sessions
     if ($quser.Length) {
@@ -116,11 +116,30 @@ function ConvertTo-RDSession {
                 $Session.LogonTime = ([system.datetime]($LOGON_TIME))
                 $Session.ComputerName = $computername
             
-                $SessionList += $Session
+#                $SessionList += $Session
+                Write-Output $Session
             }
         }
     }
-    write-output $SessionList
+##############################
+#.SYNOPSIS
+#Short description
+#
+#.DESCRIPTION
+#Long description
+#
+#.PARAMETER quser
+#Parameter description
+#
+#.PARAMETER computername
+#Parameter description
+#
+#.EXAMPLE
+#An example
+#
+#.NOTES
+#General notes
+##############################   write-output $SessionList
 }
 
 Function Remove-RDSession {
