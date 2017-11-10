@@ -14,11 +14,12 @@ SessionID parameter is aliased to ID, allowing the results of Get-RDSession to b
 ### Log Off all Disconnected sessions
 ```powershell
 Get-RDSession fileserver.domain.com | Where {$_.State -eq 'Disc'} | Remove-RDSession
-
+```
 ### Log off session 3 on fileserver
 ```powershell
 Remove-RDSession fileserver.domain.com 3
-
+```
 ### Get RD Sessions for all domain computers with a name starting with SQL
 ```powershell
 Get-AdComputer -Filter 'Name -like "SQL*"' | Get-RDSession
+```
