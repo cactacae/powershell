@@ -1,4 +1,4 @@
-function get-rdsession {
+function Get-RDSession {
     [CmdletBinding()]
 param (
 	[parameter(Position=0,
@@ -124,3 +124,5 @@ function ConvertTo-RDSession {
 	}
     write-output $SessionList
 }
+
+Export-ModuleMember -Function Get-RDSession
