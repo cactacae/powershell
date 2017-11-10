@@ -14,7 +14,7 @@ function Find-IP {
 	)
 
 	Begin {
-		$results = @()
+#		$results = @()
 	}
 
 	Process {
@@ -22,15 +22,15 @@ function Find-IP {
 			$ComputerName = $DNSHostName[0]
 			$ip = [System.Net.Dns]::GetHostEntry($ComputerName)
 			#$ip = $ip.IPAddressToString
-			$results += [pscustomobject]@{ComputerName=$ip.HostName; IPAddress=$ip.AddressList}
+			write-output [pscustomobject]@{ComputerName=$ip.HostName; IPAddress=$ip.AddressList}
 
 		} catch {
-			$results += [pscustomobject]@{ComputerName=$ComputerName; IPAddress="Unknown IP"}
+			write-output [pscustomobject]@{ComputerName=$ComputerName; IPAddress="Unknown IP"}
 		}
 	}
 
 	End {
-		write-output $results
+#		write-output $results
 	}
 }
 
@@ -50,7 +50,7 @@ function Find-HostName {
 	)
 
 	Begin {
-		$results = @()
+#		$results = @()
 	}
 
 	Process {
@@ -58,15 +58,15 @@ function Find-HostName {
 			$IP = $IPAddress[0]
 			$ComputerName = [System.Net.Dns]::GetHostEntry($IP)
 			#$ip = $ip.IPAddressToString
-			$results += [pscustomobject]@{ComputerName=$ComputerName.HostName; IPAddress=$IP}
+			Write-Output [pscustomobject]@{ComputerName=$ComputerName.HostName; IPAddress=$IP}
 
 		} catch {
-			$results += [pscustomobject]@{ComputerName="Unresolved"; IPAddress=$IP}
+			Write-Output [pscustomobject]@{ComputerName="Unresolved"; IPAddress=$IP}
 		}
 	}
 
 	End {
-		write-output $results
+#		write-output $results
 	}
 }
 
