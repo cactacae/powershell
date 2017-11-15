@@ -6,17 +6,17 @@ function Get-RDSession {
             Mandatory=$false,
             ValueFromPipelineByPropertyName=$true,
             ParameterSetName="ComputerName")]
-            [string[]]$DNSHostName,
+            [string]$DNSHostName,
 
         [parameter(Position=0,
             Mandatory=$false,
             ValueFromPipeline=$true,
             ParameterSetName="PSSession")]
-            [System.Management.Automation.Runspaces.PSSession[]]$PSSession
+            [System.Management.Automation.Runspaces.PSSession]$PSSession
     )
 
     Begin {
-#        $SessionList = @()
+        # $SessionList = @()
     }
 
     Process {
@@ -37,13 +37,13 @@ function Get-RDSession {
             }
 
             if ($queryresults) {
-                #$sessionList += (ConvertTo-RDSession $queryResults $DNSHostName)
-                ConvertTo-RDSession $queryResults $DNSHostName
+                # $sessionList += (ConvertTo-RDSession $queryResults $DNSHostName)
+                Write-Output (ConvertTo-RDSession $queryResults $DNSHostName)
             }
     }
 
     End {
-        #write-output $SessionList
+        # write-output $SessionList
     }  
 }
 
@@ -146,17 +146,28 @@ Function Remove-RDSession {
     [CmdletBinding()]
     param (
         [parameter(Position=0,
-            Mandatory=$false,
+            Mandatory=$true,
             ValueFromPipelineByPropertyName=$true,
-            ParameterSetName="RDSession")]
-        [string[]]$ComputerName,
+            ParameterSetName="SessionID")
+        ]
+        [parameter(ParameterSetName="UserName")]
+        [string]$ComputerName,
+
         [alias("ID")]
         [parameter(Position=1,
-            Mandatory=$false,
+            Mandatory=$true,
             ValueFromPipelineByPropertyName=$true,
-            ParameterSetName="RDSession")]
-        [int32[]]$SessionID
-    )
+            ParameterSetName="SessionID")
+        ]
+        [int32]$SessionID,
+
+        [parameter(Position=1,
+            Mandatory=$false,
+            ValueFromPipelineByPropertyName=$false,
+            ParameterSetName="UserName")
+        ]
+        [string]$UserName
+)
             
     #     [parameter(Position=0,
     #         Mandatory=$false,
@@ -166,15 +177,39 @@ Function Remove-RDSession {
     
     Process {
         Switch ($PSCmdlet.ParameterSetName) {
-            "RDSession" {
+            "SessionID" {
                 if ($computerName -ne $null) {
-                    $logoffcmd = {logoff.exe $SessionID /server:$ComputerName}
-                    invoke-command -ScriptBlock $logoffcmd 
+                    $queryResults = (quser $SessionID /server:$ComputerName 2>$null)
+                    $info = ConvertTo-RDSession $queryResults $ComputerName
+                    Write-Information $info
+                    
+                    Logoff-Session $SessionID $ComputerName
+#                    $logoffcmd = {logoff.exe $SessionID /server:$ComputerName}
+#                    invoke-command -ScriptBlock $logoffcmd 
+                }
+            }
+            "UserName" {
+                $info = Get-RDSession $ComputerName
+                ForEach ($con in $info) {
+                    if ($con.Username -eq $UserName) {
+                        Write-Information $con
+                        Logoff-Session $con.ID $ComputerName
+                    }
                 }
             }
         }
     }
     
+}
+
+function Logoff-Session {
+    param(
+        [int32]$SessionID,
+        [string]$computername
+    )
+
+    $logoffcmd = {logoff.exe $SessionID /server:$ComputerName}
+    invoke-command -ScriptBlock $logoffcmd 
 }
 
 Export-ModuleMember -Function Get-RDSession
