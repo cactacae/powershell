@@ -10,7 +10,7 @@ function Find-IP {
 			Mandatory=$true,
 			ValueFromPipeline=$true,
 			ValueFromPipelineByPropertyName=$true)]
-			[string[]]$DNSHostName
+			[string]$DNSHostName
 	)
 
 	Begin {
@@ -46,7 +46,7 @@ function Find-HostName {
 			Mandatory=$true,
 			ValueFromPipeline=$true,
 			ValueFromPipelineByPropertyName=$true)]
-			[string[]]$IPAddress
+			[string]$IPAddress
 	)
 
 	Begin {
