@@ -145,13 +145,14 @@ function ConvertTo-RDSession {
 Function Remove-RDSession {
     [CmdletBinding()]
     param (
+        [alias("ComputerName")]
         [parameter(Position=0,
             Mandatory=$true,
             ValueFromPipelineByPropertyName=$true,
             ParameterSetName="SessionID")
         ]
         [parameter(ParameterSetName="UserName")]
-        [string]$ComputerName,
+        [string]$DNSHostName,
 
         [alias("ID")]
         [parameter(Position=1,
@@ -161,9 +162,9 @@ Function Remove-RDSession {
         ]
         [int32]$SessionID,
 
-        [parameter(Position=1,
+        [parameter(Position=0,
             Mandatory=$false,
-            ValueFromPipelineByPropertyName=$false,
+            ValueFromPipelineByPropertyName=$true,
             ParameterSetName="UserName")
         ]
         [string]$UserName
@@ -178,22 +179,22 @@ Function Remove-RDSession {
     Process {
         Switch ($PSCmdlet.ParameterSetName) {
             "SessionID" {
-                if ($computerName -ne $null) {
-                    $queryResults = (quser $SessionID /server:$ComputerName 2>$null)
-                    $info = ConvertTo-RDSession $queryResults $ComputerName
+                if ($DNSHostName -ne $null) {
+                    $queryResults = (quser $SessionID /server:$DNSHostName 2>$null)
+                    $info = ConvertTo-RDSession $queryResults $DNSHostName
                     Write-Information $info
                     
-                    Logoff-Session $SessionID $ComputerName
+                    Logoff-Session $SessionID $DNSHostName
 #                    $logoffcmd = {logoff.exe $SessionID /server:$ComputerName}
 #                    invoke-command -ScriptBlock $logoffcmd 
                 }
             }
             "UserName" {
-                $info = Get-RDSession $ComputerName
+                $info = Get-RDSession $DNSHostName
                 ForEach ($con in $info) {
                     if ($con.Username -eq $UserName) {
                         Write-Information $con
-                        Logoff-Session $con.ID $ComputerName
+                        Logoff-Session $con.ID $DNSHostName
                     }
                 }
             }
