@@ -14,6 +14,8 @@ param(
 )
 
 <# 
+Example Output from netsh interface ip show dns
+
 Configuration for interface "Ethernet"
 Statically Configured DNS Servers:    10.10.10.10
 									  10.10.10.10
