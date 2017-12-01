@@ -2,11 +2,11 @@
 # Can be used as a "search and replace"
 #
 # Example:
-# ./Change-DNSServer.ps1 "10.10.10.20" "10.10.20.20"
+# ./Change-DNSClientServerAddress.ps1 "10.10.10.20" "10.10.20.20"
 # Would find all adapters configured with a DNS IP of 10.10.10.20 and replace the DNS Servers to 10.10.10.20 with 10.10.20.20
 #
 # To run the command remotely
-# invoke-command btmgmt9 -ScriptPath .\change-dnsserver.ps1  -ArgumentList "10.10.20.10","10.10.20.20"
+# invoke-command btmgmt9 -ScriptPath .\Change-DNSClientServerAddress.ps1  -ArgumentList "10.10.20.10","10.10.20.20"
 
 param(
 	[string]$FromIP = (Read-Host "Old IP"),
